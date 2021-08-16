@@ -24,7 +24,7 @@ namespace PermadeathEnforcementSuite
                     {
                         ScribeMetaHeaderUtility.WriteMetaHeader();
                         Game target = Current.Game;
-                        Scribe_Deep.Look(ref target, "PESGame");
+                        Scribe_Deep.Look(ref target, SaveEncryptor.EncryptorUtils.getNodeName());
                     });
                     traverse.SetValue(Find.TickManager.TicksGame);
                 }
@@ -36,6 +36,7 @@ namespace PermadeathEnforcementSuite
 
                 return false;
             }
+
         }
 
         [HarmonyPatch(typeof(SavedGameLoaderNow), nameof(SavedGameLoaderNow.LoadGameFromSaveFileNow), new Type[] { typeof(string) })]
@@ -53,7 +54,7 @@ namespace PermadeathEnforcementSuite
                 try
                 {
                     ScribeMetaHeaderUtility.LoadGameDataHeader(ScribeMetaHeaderUtility.ScribeHeaderMode.Map, logVersionConflictWarning: true);
-                    if (!Scribe.EnterNode("PESGame"))
+                    if (!Scribe.EnterNode(SaveEncryptor.EncryptorUtils.getNodeName()))
                     {
                         Log.Error("[PES] Could not find PESGame XML node.");
                         Scribe.ForceStop();
@@ -72,6 +73,27 @@ namespace PermadeathEnforcementSuite
                 PermadeathModeUtility.CheckUpdatePermadeathModeUniqueNameOnGameLoad(fileName);
                 DeepProfiler.End();
                 return false;
+            }
+        }
+
+        public static class EncryptorUtils 
+        {
+            public static String getNodeName() {
+                if (LoadedModManager.GetMod<PESMod>().GetSettings<PESSettings>().allowStorytellerAccess)
+                {
+                    return "PESGame_1";
+                }
+                else if (LoadedModManager.GetMod<PESMod>().GetSettings<PESSettings>().disableDoubleAutosave)
+                {
+                    return "PESGame_2";
+                }
+                else if (LoadedModManager.GetMod<PESMod>().GetSettings<PESSettings>().allowStorytellerAccess && LoadedModManager.GetMod<PESMod>().GetSettings<PESSettings>().disableDoubleAutosave)
+                {
+                    return "PESGame_3";
+                }
+                else {
+                    return "PESGame";
+                }
             }
         }
     }

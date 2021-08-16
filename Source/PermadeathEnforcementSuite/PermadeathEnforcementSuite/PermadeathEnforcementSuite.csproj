@@ -292,6 +292,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PESMod.cs" />
     <Compile Include="SaveEncryptor.cs" />
     <Compile Include="StorytellerLock.cs" />
     <Compile Include="DevModeLock.cs" />
